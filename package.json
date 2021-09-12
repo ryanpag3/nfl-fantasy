@@ -1,0 +1,13 @@
+{
+  "name": "nfl-fantasy",
+  "version": "1.0.0",
+  "description": "An NFL Fantasy library.",
+  "main": "dist/index.js",
+  "repository": "git@github.com:ryanpag3/nfl-fantasy.git",
+  "author": "Ryan Page <ryanapage@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.21.4",
+    "typescript": "^4.4.3"
+  }
+}
