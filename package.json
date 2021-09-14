@@ -7,7 +7,7 @@
   "author": "Ryan Page <ryanapage@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "test": "jest --forceExit --runInBand --coverage"
+    "test": "jest --runInBand --coverage"
   },
   "dependencies": {
     "axios": "^0.21.4",

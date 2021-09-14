@@ -1,6 +1,6 @@
 import axios from 'axios';
 import surgeon, { cheerioEvaluator, subroutineAliasPreset } from 'surgeon';
-import { GetLeagueInfoResponse } from './types';
+import { GetLeagueInfoResponse, GetMatchupsResponse } from './types';
 
 const x = surgeon({
     evaluator: cheerioEvaluator(),
@@ -21,8 +21,8 @@ export default class NFLFantasy {
      */
     async getLeagueInfo(): Promise<GetLeagueInfoResponse> {
         const { data } = await axios.get(`https://fantasy.nfl.com/league/${this.leagueId}/settings`);
-        const scraped = x({ 
-            primary: 'sm .nameValue' 
+        const scraped = x({
+            primary: 'sm .nameValue'
         }, data);
 
         const mapped: any = {};
@@ -85,7 +85,7 @@ export default class NFLFantasy {
                 receivingTouchdowns: this.getMappedValue(mapped, 'Receiving Touchdowns:'),
                 kickoffAndPuntReturnTouchdowns: this.getMappedValue(mapped, 'Kickoff and Punt Return Touchdowns:'),
                 fumbleRecoveredForTouchdown: this.getMappedValue(mapped, 'Fumble Recovered for TD:'),
-                fumblesLost:  this.getMappedValue(mapped, 'Fumbles Lost:'),
+                fumblesLost: this.getMappedValue(mapped, 'Fumbles Lost:'),
                 twoPointConversions: this.getMappedValue(mapped, '2-Point Conversions:'),
                 extraPointMade: this.getMappedValue(mapped, 'PAT Made:'),
                 fieldGoalMade: {
@@ -114,6 +114,32 @@ export default class NFLFantasy {
             useFractionalPts: this.getMappedValue(mapped, 'Use Fractional Pts') === 'Yes',
             useNegativePts: this.getMappedValue(mapped, 'Use Negative Pts') === 'Yes',
         }
+    }
+
+    async getMatchups(week: number = 1): Promise<GetMatchupsResponse[][]> {
+        const { data } = await axios.get(`https://fantasy.nfl.com/league/${this.leagueId}/?scoreStripType=fantasy&week=${week}`);
+        
+        const scraped = x(['saf .ss-6 | sm li', {
+            firstTeamName: 'saf .first | select em {0,}[0] | read property textContent',
+            firstTeamScore: 'saf .first | select .teamTotal {0,}[0] | read property textContent',
+            secondTeamName: 'saf .last | select em {0,}[0] | read property textContent',
+            secondTeamScore: 'saf .last | select .teamTotal {0,}[0] | read property textContent',
+        }], data);
+
+        const results: GetMatchupsResponse[][] = scraped.map((s: any) => {
+            return [
+                {
+                    name: s.firstTeamName,
+                    score: Number.parseFloat(s.firstTeamScore)
+                },
+                {
+                    name: s.secondTeamName,
+                    score: Number.parseFloat(s.secondTeamScore)
+                }
+            ]
+        });
+
+        return results;
     }
 
     getMappedValue(mapped: any, key: string) {

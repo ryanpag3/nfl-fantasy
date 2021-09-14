@@ -78,3 +78,8 @@ export interface GetLeagueInfoResponse {
     useFractionalPts: boolean;
     useNegativePts: boolean;
 }
+
+export interface GetMatchupsResponse {
+    name: string;
+    score: number;
+};
