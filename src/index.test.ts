@@ -37,7 +37,7 @@ it('should throw an error if requesting matchups with invalid id', async () => {
 
 it('should get team information without error', async () => {
     const api = new NFLFantasy(VALID_LEAGUE_ID);
-    await api.getTeam(1);
+    await api.getTeam(2);
 });
 
 it('should throw an error if requesting team information with invalid league ID', async () => {
