@@ -17,7 +17,7 @@ jobs:
     - name: setup nodejs
       uses: actions/setup-node@v1
       with:
-        node-version: 'lts/*'
+        node-version: '16'
     - name: run tests
       run: |
         yarn install
