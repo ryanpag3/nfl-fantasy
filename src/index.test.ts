@@ -4,6 +4,9 @@ const VALID_LEAGUE_ID = 9666258;
 
 it('should get league info for a valid league', async () => {
     const api = new NFLFantasy(VALID_LEAGUE_ID);
+
+    console.log(JSON.stringify(await api.getTeam(2), null, 4));
+
     expect(api.getLeagueInfo()).resolves;
 });
 
