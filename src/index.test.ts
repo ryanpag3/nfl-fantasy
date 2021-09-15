@@ -34,3 +34,30 @@ it('should throw an error if requesting matchups with invalid id', async () => {
     }
     expect(err).not.toBeUndefined();
 });
+
+it('should get team information without error', async () => {
+    const api = new NFLFantasy(VALID_LEAGUE_ID);
+    await api.getTeam(1);
+});
+
+it('should throw an error if requesting team information with invalid league ID', async () => {
+    const api = new NFLFantasy(90909090);
+    let err;
+    try {
+        await api.getTeam(1);
+    } catch (e) {
+        err = e;
+    }
+    expect(err).not.toBeUndefined();
+});
+
+it('should throw an error if requesting team information with invalid team ID', async () => {
+    const api = new NFLFantasy(VALID_LEAGUE_ID);
+    let err;
+    try {
+        await api.getTeam(0);
+    } catch (e) {
+        err = e;
+    }
+    expect(err).not.toBeUndefined();
+});

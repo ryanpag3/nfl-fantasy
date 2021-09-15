@@ -116,6 +116,14 @@ export default class NFLFantasy {
         }
     }
 
+    getMappedValue(mapped: any, key: string) {
+        const val = mapped[key];
+        if (!val) {
+            throw new Error(`Mapped value not found for key ${key}! Scrape pattern may need to be adjusted.`);
+        }
+        return val;
+    }
+
     async getMatchups(week: number = 1): Promise<GetMatchupsResponse[][]> {
         const { data } = await axios.get(`https://fantasy.nfl.com/league/${this.leagueId}/?scoreStripType=fantasy&week=${week}`);
         
@@ -142,12 +150,97 @@ export default class NFLFantasy {
         return results;
     }
 
-    getMappedValue(mapped: any, key: string) {
-        const val = mapped[key];
-        if (!val) {
-            throw new Error(`Mapped value not found for key ${key}! Scrape pattern may need to be adjusted.`);
-        }
-        return val;
+    async getTeam(teamId: number) {
+        const { data } = await axios.get(`https://fantasy.nfl.com/league/${this.leagueId}/team/${teamId}`);
+
+        const teamInfoScraped = this.scrapeTeamInfo(data);
+        const playersScraped = this.getScrapedPlayers(data);
+
+        return {
+            ...teamInfoScraped,
+            players: playersScraped
+        };
+    }
+
+    private scrapeTeamInfo(data: string) {
+        const teamInfo = x(['select .quickInfo',{
+            name: 'saf .label | read property textContent',
+            owner: 'saf .userName | read property textContent',
+            rank: 'saf .teamStats | saf strong | read property textContent',
+            record: 'saf .teamStats | saf .teamRecord | read property textContent',
+            streak: 'saf .teamStats | saf .teamStreak | read property textContent',
+            waiver: 'saf .teamStats | saf .last | saf strong | read property textContent'
+        }], data);
+
+        teamInfo.rank = Number.parseInt(teamInfo.rank);
+        teamInfo.waiver = Number.parseInt(teamInfo.waiver);
+        return teamInfo;
+    }
+
+    private getScrapedPlayers(data: string) {
+        const playersScraped = x(['saf tbody | remove .benchLabel | sm tr', {
+            name: 'saf .playerName | read property textContent',
+            positionAndTeam: 'saf .c | saf em | read property textContent',
+            score: {
+                passing: {
+                    yards: 'saf .stat_5 | saf span | read property textContent',
+                    touchdowns: 'saf .stat_6 | saf span | read property textContent',
+                    interceptions: 'saf .stat_7 | saf span | read property textContent'
+                },
+                rushing: {
+                    yards: 'saf .stat_14 | saf span | read property textContent',
+                    touchdowns: 'saf .stat_15 | saf span | read property textContent'
+                },
+                receiving: {
+                    receptions: 'saf .stat_20 | saf span | read property textContent',
+                    yards: 'saf .stat_21 | saf span | read property textContent',
+                    touchdowns: 'saf .stat_22 | saf span | read property textContent',
+                },
+                return: {
+                    touchdowns: 'saf .stat_28 | saf span | read property textContent'
+                },
+                fumbleTouchdowns: 'saf .stat_29 | saf span | read property textContent',
+                twoPointConversions: 'saf .stat_32 | saf span | read property textContent',
+                fumblesLost: 'saf .stat_30 | saf span | read property textContent',
+                total: 'saf .statTotal | saf span | read property textContent'
+            }
+        }], data);
+
+        return playersScraped.map((p: any) => {
+            if (!p.name)
+                return null;
+            
+            const mapped = {
+                name: p.name,
+                position: p.positionAndTeam.replaceAll(' ', '').split('-')[0],
+                team: p.positionAndTeam.replaceAll(' ', '').split('-')[1],
+                score: {
+                    passing: {
+                        yards: Number.parseFloat(p.score.passing.yards) || 0,
+                        touchdowns: Number.parseInt(p.score.passing.touchdowns) || 0,
+                        interceptions: Number.parseInt(p.score.passing.interceptions) || 0
+                    },
+                    rushing: {
+                        yards: Number.parseFloat(p.score.rushing.yards) || 0,
+                        touchdowns: Number.parseInt(p.score.rushing.touchdowns) || 0
+                    },
+                    receiving: {
+                        yards: Number.parseFloat(p.score.receiving.yards) || 0,
+                        touchdowns: Number.parseInt(p.score.receiving.touchdowns) || 0,
+                        receptions: Number.parseInt(p.score.receiving.receptions) || 0
+                    },
+                    return: {
+                        touchdowns: Number.parseInt(p.score.receiving.touchdowns) || 0
+                    },
+                    fumbleTouchdowns: Number.parseInt(p.score.fumbleTouchdowns) || 0,
+                    twoPointConversions: Number.parseInt(p.score.twoPointConversions) || 0,
+                    fumblesLost: Number.parseInt(p.score.fumblesLost) || 0,
+                    total: Number.parseFloat(p.score.total) || 0
+                }
+            }
+
+            return mapped;
+        }).filter((r: any) => r !== null);
     }
 }
 

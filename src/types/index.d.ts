@@ -83,3 +83,40 @@ export interface GetMatchupsResponse {
     name: string;
     score: number;
 };
+
+export interface GetTeamResponse {
+    name: string;
+    owner: string;
+    rank: number;
+    record: string;
+    streak: string;
+    waiver: number;
+    players: {
+        name: string;
+        position: string;
+        team: string;
+        score: {
+            passing: {
+                yards: number;
+                touchdowns: number;
+                interceptions: number;
+            },
+            rushing: {
+                yards: number;
+                touchdowns: number;
+            },
+            receiving: {
+                receptions: number;
+                yards: number;
+                touchdowns: number;
+            },
+            return: {
+                touchdowns: number;
+            },
+            fumbleTouchdowns: number;
+            twoPointConversions: number;
+            fumblesLost: number;
+            total: number;
+        }
+    }[];
+}
