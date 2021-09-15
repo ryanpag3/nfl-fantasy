@@ -1,0 +1,24 @@
+name: CICD
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - feature/*
+      - defect/*
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout repository
+      uses: actions/checkout@v2
+    - name: setup nodejs
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+    - name: run tests
+      run: |
+        yarn install
+        yarn test
