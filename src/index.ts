@@ -207,6 +207,8 @@ export default class NFLFantasy {
         }], data);
 
         return playersScraped.map((p: any) => {
+            console.log(p);
+            
             if (!p.name)
                 return null;
             
