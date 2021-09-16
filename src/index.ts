@@ -1,6 +1,6 @@
 import axios from 'axios';
+import { GetLeagueInfoResponse, GetMatchupsResponse } from 'nfl-fantasy';
 import surgeon, { cheerioEvaluator, subroutineAliasPreset } from 'surgeon';
-import { GetLeagueInfoResponse, GetMatchupsResponse } from './types';
 
 const x = surgeon({
     evaluator: cheerioEvaluator(),
@@ -118,9 +118,6 @@ export default class NFLFantasy {
 
     getMappedValue(mapped: any, key: string) {
         const val = mapped[key];
-        if (!val) {
-            throw new Error(`Mapped value not found for key ${key}! Scrape pattern may need to be adjusted.`);
-        }
         return val;
     }
 

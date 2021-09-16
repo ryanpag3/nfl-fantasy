@@ -1,17 +1,23 @@
 {
   "name": "nfl-fantasy",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "An NFL Fantasy library.",
   "main": "dist/index.js",
+  "types": "src/types/index.d.ts",
   "repository": "git@github.com:ryanpag3/nfl-fantasy.git",
   "author": "Ryan Page <ryanapage@gmail.com>",
   "license": "MIT",
   "scripts": {
     "test": "jest --runInBand --coverage"
   },
+  "files": [
+    "/dist",
+    "/src/types/index.d.ts"
+  ],
   "dependencies": {
     "axios": "^0.21.4",
     "surgeon": "^3.16.4",
+    "tsc-hooks": "^1.1.2-beta.2",
     "typescript": "^4.4.3"
   },
   "devDependencies": {
