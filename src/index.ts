@@ -124,7 +124,7 @@ export default class NFLFantasy {
     async getMatchups(week: number = 1): Promise<GetMatchupsResponse[][]> {
         const { data } = await axios.get(`https://fantasy.nfl.com/league/${this.leagueId}/?scoreStripType=fantasy&week=${week}`);
         
-        const scraped = x(['saf .ss-6 | sm li', {
+        const scraped = x(['saf .ss | sm li', {
             firstTeamName: 'saf .first | select em {0,}[0] | read property textContent',
             firstTeamScore: 'saf .first | select .teamTotal {0,}[0] | read property textContent',
             secondTeamName: 'saf .last | select em {0,}[0] | read property textContent',

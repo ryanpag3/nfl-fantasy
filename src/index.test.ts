@@ -1,6 +1,6 @@
 import NFLFantasy from '.'
 
-const VALID_LEAGUE_ID = 9666258;
+const VALID_LEAGUE_ID = 9798068;
 
 it('should get league info for a valid league', async () => {
     const api = new NFLFantasy(VALID_LEAGUE_ID);
